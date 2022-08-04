@@ -2,83 +2,86 @@ package capers;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 import static capers.Utils.*;
 
-/** Canine Capers: A Gitlet Prelude.
+/** A repository for Capers 
  * @author TODO
-*/
-public class Main {
+ * The structure of a Capers Repository is as follows:
+ *
+ * .capers/ -- top level folder for all persistent data in your lab12 folder
+ *    - dogs/ -- folder containing all of the persistent data for dogs
+ *    - story -- file containing the current story
+ *
+ * TODO: change the above structure if you do something different.
+ */
+public class CapersRepository {
+    /** Current Working Directory. */
+    static final File CWD = new File(System.getProperty("user.dir"));
+
+    /** Main metadata folder. */
+    static final File CAPERS_FOLDER = Utils.join(CWD,"capers"); // TODO Hint: look at the `join`
+                                            //      function in Utils
+
     /**
-     * Runs one of three commands:
-     * story [text] -- Appends "text" + a newline to a story file in the
-     *                 .capers directory. Additionally, prints out the
-     *                 current story.
-     *
-     * dog [name] [breed] [age] -- Persistently creates a dog with
-     *                             the specified parameters; should also print
-     *                             the dog's toString(). Assume dog names are
-     *                             unique.
-     *
-     * birthday [name] -- Advances a dog's age persistently
-     *                    and prints out a celebratory message.
-     *
-     * All persistent data should be stored in a ".capers"
-     * directory in the current working directory.
-     *
-     * Recommended structure (you do not have to follow):
-     *
-     * *YOU SHOULD NOT CREATE THESE MANUALLY,
-     *  YOUR PROGRAM SHOULD CREATE THESE FOLDERS/FILES*
+     * Does required filesystem operations to allow for persistence.
+     * (creates any necessary folders or files)
+     * Remember: recommended structure (you do not have to follow):
      *
      * .capers/ -- top level folder for all persistent data in your lab12 folder
      *    - dogs/ -- folder containing all of the persistent data for dogs
      *    - story -- file containing the current story
-     *
-     * @param args arguments from the command line
      */
-    public static void main(String[] args)  {
-        if (args.length == 0) {
-            Utils.exitWithError("Must have at least one argument");
+    public static void setupPersistence() {
+        // TODO
+
+        Dog.DOG_FOLDER.mkdir();
+        File f = new File(CAPERS_FOLDER,"story.txt");
+        if(!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
-        CapersRepository.setupPersistence();
-        String text;
-        switch (args[0]) {
-        case "story":
-            /* This call has been handled for you. The rest will be similar. */
-            validateNumArgs("story", args, 2);
-            text = args[1];
-            CapersRepository.writeStory(text);
-            break;
-        case "dog":
-            validateNumArgs("dog", args, 4);
-            // TODO: make a dog
-            CapersRepository.makeDog(args[1],args[2],Integer.parseInt(args[3]));
-            break;
-        case "birthday":
-            validateNumArgs("birthday", args, 2);
-            // TODO: celebrate this dog's birthday
-            CapersRepository.celebrateBirthday(args[1]);
-            break;
-        default:
-            exitWithError(String.format("Unknown command: %s", args[0]));
-        }
-        return;
     }
 
     /**
-     * Checks the number of arguments versus the expected number,
-     * throws a RuntimeException if they do not match.
-     *
-     * @param cmd Name of command you are validating
-     * @param args Argument array from command line
-     * @param n Number of expected arguments
+     * Appends the first non-command argument in args
+     * to a file called `story` in the .capers directory.
+     * @param text String of the text to be appended to the story
      */
-    public static void validateNumArgs(String cmd, String[] args, int n) {
-        if (args.length != n) {
-            throw new RuntimeException(
-                String.format("Invalid number of arguments for: %s.", cmd));
-        }
+    public static void writeStory(String text) {
+        // TODO
+        File f = Utils.join(CAPERS_FOLDER,"story.txt");
+        String ss = Utils.readContentsAsString(f);
+        ss = ss+ text+"\n";
+        Utils.writeContents(f,ss);
+        System.out.println(ss);
+    }
+
+    /**
+     * Creates and persistently saves a dog using the first
+     * three non-command arguments of args (name, breed, age).
+     * Also prints out the dog's information using toString().
+     */
+    public static void makeDog(String name, String breed, int age) {
+        // TODO
+        Dog d = new Dog(name,breed,age);
+        d.saveDog();
+        String ss = d.toString();
+        System.out.println(ss);
+    }
+
+    /**
+     * Advances a dog's age persistently and prints out a celebratory message.
+     * Also prints out the dog's information using toString().
+     * Chooses dog to advance based on the first non-command argument of args.
+     * @param name String name of the Dog whose birthday we're celebrating.
+     */
+    public static void celebrateBirthday(String name) {
+        // TODO
+        Dog d = Dog.fromFile(name);
+        d.haveBirthday();
     }
 }
