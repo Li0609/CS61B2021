@@ -2,6 +2,7 @@ package capers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 import static capers.Utils.*;
 
@@ -15,7 +16,7 @@ import static capers.Utils.*;
  *
  * TODO: change the above structure if you do something different.
  */
-public class CapersRepository {
+public class CapersRepository implements Serializable {
     /** Current Working Directory. */
     static final File CWD = new File(System.getProperty("user.dir"));
 
@@ -32,18 +33,9 @@ public class CapersRepository {
      *    - dogs/ -- folder containing all of the persistent data for dogs
      *    - story -- file containing the current story
      */
-    public static void setupPersistence() {
+    public static void setupPersistence()  {
         // TODO
-
         Dog.DOG_FOLDER.mkdir();
-        File f = new File(CAPERS_FOLDER,"story.txt");
-        if(!f.exists()) {
-            try {
-                f.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     /**
@@ -53,8 +45,13 @@ public class CapersRepository {
      */
     public static void writeStory(String text) {
         // TODO
-        File f = Utils.join(CAPERS_FOLDER,"story.txt");
-        String ss = Utils.readContentsAsString(f);
+        File f = Utils.join(CAPERS_FOLDER, "story.txt");
+        String ss;
+        if(!f.exists()){
+            ss = "";
+        }else{
+            ss = Utils.readContentsAsString(f);
+        }
         ss = ss+ text+"\n";
         Utils.writeContents(f,ss);
         System.out.println(ss);
